@@ -1,5 +1,6 @@
 const express = require('express');
 const app = express();
+const Decimal = require('decimal.js');
 
 let port = process.env.PORT;
 if (port == null || port == "") {
@@ -25,23 +26,9 @@ app.post('/', (req, res) => {
       .custom_fields
       .find(({ name }) => name === 'expiry_date');
 
-    if (
-      expiry
-      // expiry.string_value &&
-      // expiry.string_value.length > 0
-    ) {
-      // res.json({ actions: [] });
-      // {
-      //   "actions": [
-      //     {
-      //       "type": "add_line_item",
-      //       "product_id": "0242ac12-0002-11e9-e8c4-659494e33153",
-      //       "quantity": "2.4",
-      //       "unit_price": "3.75",
-      //       "note": "Such an awesome line item!"
-      //     }
-      //   ]
-      // }
+    if (lineItem.note) {
+      res.json({ actions: [] });
+    } else if (expiry) {
       res.json({
         actions: [
           {
@@ -52,7 +39,7 @@ app.post('/', (req, res) => {
             type: "add_line_item",
             product_id: lineItem.product_id,
             quantity: "1",
-            unit_price: "5",
+            unit_price: new Decimal(lineItem.total_price).mul(0.75).toFixed(2),
             note: "Reduced"
           }
         ]
