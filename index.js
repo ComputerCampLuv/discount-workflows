@@ -7,6 +7,34 @@ if (port == null || port == "") {
   port = 3000;
 }
 
+const discountRules = [
+  { days: 1, hours: 0, minutes: 0, seconds: 0, reduction: 1 },     // "2022-06-30 00:00:00"
+  { days: 0, hours: 17, minutes: 0, seconds: 0, reduction: 0.95 }, // "2022-06-29 17:00:00"
+  { days: 0, hours: 12, minutes: 0, seconds: 0, reduction: 0.75 }, // "2022-06-29 12:00:00"
+  { days: 0, hours: 0, minutes: 0, seconds: 0, reduction: 0.50 },  // "2022-06-29 00:00:00"
+  { days: -1, hours: 0, minutes: 0, seconds: 0, reduction: 0.25 }, // "2022-06-28 17:00:00"
+  { days: -2, hours: 0, minutes: 0, seconds: 0, reduction: 0.1 }   // "2022-06-27 17:00:00"
+];
+
+const satisfiesRule = (expiry, rule) => {
+  const now = new Date();
+  const cutoff = new Date(
+    expiry.getFullYear(),
+    expiry.getMonth(),
+    expiry.getDate() + rule.days,
+    rule.hours,
+    rule.minutes
+  );
+
+  if (now.getTime() > cutoff.getTime()) {
+    return true;
+  }
+
+  return false;
+};
+
+// const discount = discountRules.find((rule) => satisfiesRule(new Date("2022-07-01"), rule));
+
 app.use(express.json())
 
 app.get("/", (req, res) => {
@@ -16,6 +44,7 @@ app.get("/", (req, res) => {
 
 app.post("/", (req, res) => {
   const today = new Date().setUTCHours(0, 0, 0, 0);
+  const now = new Date();
 
   const actions = [];
 
@@ -47,11 +76,11 @@ app.post("/", (req, res) => {
     console.log('expiryDateField:', expiryDateField);
 
     if (expiryDateField) {
-      const expiryDate = new Date(expiryDateField.string_value).getTime();
+      const expiryDate = new Date(expiryDateField.string_value);
 
-      console.log('expiryDate:', expiryDate);
+      const discount = discountRules.find((rule) => satisfiesRule(expiryDate, rule));
 
-      if (expiryDate === today) {
+      if (discount) {
         // remove the line item with product nearing expiry
         actions.push({
           type: "remove_line_item",
@@ -62,30 +91,49 @@ app.post("/", (req, res) => {
           type: "add_line_item",
           product_id: lineItem.product_id,
           quantity: lineItem.quantity,
-          unit_price: new Decimal(lineItem.price).mul(0.75).toFixed(2),
+          unit_price: new Decimal(lineItem.price).mul(discount.reduction).toFixed(2),
           note: "Reduced"
         });
-
-        return;
       }
+      // const expiryDate = new Date(expiryDateField.string_value).getTime();
 
-      if (expiryDate < today) {
-        // remove the line item with expired product
-        actions.push({
-          type: "remove_line_item",
-          line_item_id: lineItem.id
-        });
-        // replace the line item with a donated variant
-        actions.push({
-          type: "add_line_item",
-          product_id: lineItem.product_id,
-          quantity: lineItem.quantity,
-          unit_price: "0",
-          note: "Donated"
-        });
+      // console.log('expiryDate:', expiryDate);
 
-        return;
-      }
+      // if (expiryDate === today) {
+      //   // remove the line item with product nearing expiry
+      //   actions.push({
+      //     type: "remove_line_item",
+      //     line_item_id: lineItem.id
+      //   });
+      //   // replace the line item with a reduced variant
+      //   actions.push({
+      //     type: "add_line_item",
+      //     product_id: lineItem.product_id,
+      //     quantity: lineItem.quantity,
+      //     unit_price: new Decimal(lineItem.price).mul(0.75).toFixed(2),
+      //     note: "Reduced"
+      //   });
+
+      //   return;
+      // }
+
+      // if (expiryDate < today) {
+      //   // remove the line item with expired product
+      //   actions.push({
+      //     type: "remove_line_item",
+      //     line_item_id: lineItem.id
+      //   });
+      //   // replace the line item with a donated variant
+      //   actions.push({
+      //     type: "add_line_item",
+      //     product_id: lineItem.product_id,
+      //     quantity: lineItem.quantity,
+      //     unit_price: "0",
+      //     note: "Donated"
+      //   });
+
+      //   return;
+      // }
 
       return;
     }
