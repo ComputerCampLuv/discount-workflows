@@ -17,13 +17,16 @@ app.get("/", (req, res) => {
 app.post("/", (req, res) => {
   const startOfDay = new Date();
   startOfDay.setUTCHours(0, 0, 0, 0);
+  console.log('startOfDay:', startOfDay);
 
   const endOfDay = new Date();
   endOfDay.setUTCHours(23, 59, 59, 999);
+  console.log('endOfDay:', endOfDay);
 
   const actions = [];
 
   req.body.line_items.forEach(lineItem => {
+    console.log('lineItem:', lineItem);
     // Line item was created as a result of a previous action
     if (lineItem.note === "Reduced") {
       return;
@@ -44,12 +47,16 @@ app.post("/", (req, res) => {
       .custom_fields
       .find(({ name }) => name === "expiry_date");
 
+    console.log('expiryDateField:', expiryDateField);
+
     if (expiryDateField) {
       const expiryDate = new Date(expiryDateField.string_value);
 
+      console.log('expiryDate:', expiryDate);
+
       if (
-        expiryDate.getTime() > startOfDay &&
-        expiryDate.getTime() < endOfDay
+        expiryDate.getTime() >= startOfDay &&
+        expiryDate.getTime() <= endOfDay
       ) {
         // remove the line item with product nearing expiry
         actions.push({
