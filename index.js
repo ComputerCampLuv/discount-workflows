@@ -15,18 +15,41 @@ app.get('/', (req, res) => {
 app.post('/', (req, res) => {
   if (
     req.body?.line_items &&
-    req.body?.line_items[0]?.id
+    req.body?.line_items[0]
   ) {
-    console.log(req.body?.line_items[0]);
+    const lineItem = req.body.line_items[0];
 
-    const expiry = req.body?.line_items[0].custom_fields.find(({ name }) => name === 'expiry_date');
+    console.log('line_item:', JSON.stringify(lineItem));
+
+    const expiry = lineItem
+      .custom_fields
+      .find(({ name }) => name === 'expiry_date');
 
     if (
       expiry
       // expiry.string_value &&
       // expiry.string_value.length > 0
     ) {
-      res.json({ actions: [] });
+      // res.json({ actions: [] });
+      // {
+      //   "actions": [
+      //     {
+      //       "type": "add_line_item",
+      //       "product_id": "0242ac12-0002-11e9-e8c4-659494e33153",
+      //       "quantity": "2.4",
+      //       "unit_price": "3.75",
+      //       "note": "Such an awesome line item!"
+      //     }
+      //   ]
+      // }
+      res.json({
+        actions: [
+          {
+            type: "remove_line_item",
+            line_item_id: lineItem.id
+          }
+        ]
+      });
     } else {
       res.json({
         actions: [
