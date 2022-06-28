@@ -30,7 +30,7 @@ app.post('/', (req, res) => {
 
   if (!expires || lineItem.note === "Reduced") {
     res.json({ actions: [] });
-  } else if (expiry) {
+  } else if (expiryDate) {
     const today = new Date();
     const expiry = new Date(expiryDate.string_value);
     
