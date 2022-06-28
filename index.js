@@ -74,7 +74,7 @@ app.post("/", (req, res) => {
       title: "We need some information about this product",
       message: "Please check the product expiry",
       entity: "line_item",
-      entity_id: lineItem,
+      entity_id: lineItem.id,
       required_custom_fields: [
         {
           name: "expiry_date"
