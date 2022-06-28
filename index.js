@@ -14,21 +14,31 @@ app.get('/', (req, res) => {
 });
 
 app.post('/', (req, res) => {
-  if (
-    req.body?.line_items &&
-    req.body?.line_items[0]
-  ) {
-    const lineItem = req.body.line_items[0];
+  const lineItem = req.body.line_items[0];
 
-    console.log('line_item:', JSON.stringify(lineItem));
+  console.log('line_item:', JSON.stringify(lineItem));
 
-    const expiry = lineItem
-      .custom_fields
-      .find(({ name }) => name === 'expiry_date');
+  const expiry = lineItem
+    .custom_fields
+    .find(({ name }) => name === 'expiry_date');
 
-    if (lineItem.note) {
-      res.json({ actions: [] });
-    } else if (expiry) {
+  const expires = lineItem
+    .product
+    .custom_fields
+    .find(({ name }) => name === 'expires')
+    ?.boolean_value;
+
+  if (!expires || lineItem.note === "Reduced") {
+    res.json({ actions: [] });
+  } else if (expiry) {
+    const today = new Date();
+    const expiry = new Date(expiry.string_value);
+    
+    if (
+      expiry.getYear() === today.getYear() &&
+      expiry.getMonth() === today.getMonth() &&
+      expiry.getDay() === today.getDay()
+    ) {
       res.json({
         actions: [
           {
@@ -45,26 +55,25 @@ app.post('/', (req, res) => {
         ]
       });
     } else {
-      res.json({
-        actions: [
-          {
-            type: "require_custom_fields",
-            title: "We need some information about this product",
-            message: "Bla bla bla",
-            entity: "line_item",
-            entity_id: req.body?.line_items[0].id,
-            required_custom_fields: [
-              {
-                name: "expiry_date"
-              }
-            ]
-          }
-        ]
-      });
+      res.json({ actions: [] });
     }
-    
   } else {
-    res.json({ actions: [] });
+    res.json({
+      actions: [
+        {
+          type: "require_custom_fields",
+          title: "We need some information about this product",
+          message: "Bla bla bla",
+          entity: "line_item",
+          entity_id: req.body?.line_items[0].id,
+          required_custom_fields: [
+            {
+              name: "expiry_date"
+            }
+          ]
+        }
+      ]
+    });
   }
 });
 
