@@ -21,7 +21,11 @@ app.post('/', (req, res) => {
 
     const expiry = req.body?.line_items[0].custom_fields.find(({ name }) => name === 'expiry_date');
 
-    if (expiry.string_value && expiry.string_value.length > 0) {
+    if (
+      expiry
+      // expiry.string_value &&
+      // expiry.string_value.length > 0
+    ) {
       res.json({ actions: [] });
     } else {
       res.json({
