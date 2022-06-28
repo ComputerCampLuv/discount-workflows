@@ -6,8 +6,15 @@ if (port == null || port == "") {
   port = 3000;
 }
 
+app.use(express.json())
+
 app.get('/', (req, res) => {
-  res.send('Hello World!')
+  res.json({ ok: true });
+});
+
+app.post('/', (req, res) => {
+  console.log(req.body);
+  res.json({ actions: [] });
 });
 
 app.listen(port, () => {
