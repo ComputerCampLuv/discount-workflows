@@ -13,8 +13,11 @@ app.get('/', (req, res) => {
 });
 
 app.post('/', (req, res) => {
-  console.log(req.body);
-  if (req.body?.line_items && req.body?.line_items[0]?.id) {
+  if (
+    req.body?.line_items &&
+    req.body?.line_items[0]?.id
+  ) {
+    console.log(req.body?.line_items[0]);
     res.json({
       actions: [
         {
