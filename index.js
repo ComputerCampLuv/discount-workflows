@@ -60,7 +60,7 @@ app.post("/", (req, res) => {
         actions.push({
           type: "add_line_item",
           product_id: lineItem.product_id,
-          quantity: lineItem.price.quantity,
+          quantity: lineItem.quantity,
           unit_price: new Decimal(lineItem.price).mul(0.75).toFixed(2),
           note: "Reduced"
         });
@@ -82,6 +82,8 @@ app.post("/", (req, res) => {
       ]
     });
   });
+
+  console.log('actions:', actions);
 
   res.json({ actions });
 });
