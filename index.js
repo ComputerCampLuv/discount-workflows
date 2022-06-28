@@ -18,7 +18,7 @@ app.post('/', (req, res) => {
 
   console.log('line_item:', JSON.stringify(lineItem));
 
-  const expiry = lineItem
+  const expiryDate = lineItem
     .custom_fields
     .find(({ name }) => name === 'expiry_date');
 
@@ -32,7 +32,7 @@ app.post('/', (req, res) => {
     res.json({ actions: [] });
   } else if (expiry) {
     const today = new Date();
-    const expiry = new Date(expiry.string_value);
+    const expiry = new Date(expiryDate.string_value);
     
     if (
       expiry.getYear() === today.getYear() &&
