@@ -1,0 +1,22 @@
+{
+  "name": "discount-workflows",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ComputerCampLuv/discount-workflows.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ComputerCampLuv/discount-workflows/issues"
+  },
+  "homepage": "https://github.com/ComputerCampLuv/discount-workflows#readme",
+  "dependencies": {
+    "express": "^4.18.1"
+  }
+}
