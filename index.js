@@ -47,6 +47,13 @@ app.post('/', (req, res) => {
           {
             type: "remove_line_item",
             line_item_id: lineItem.id
+          },
+          {
+            type: "add_line_item",
+            product_id: lineItem.product_id,
+            quantity: "1",
+            unit_price: "5",
+            note: "Reduced"
           }
         ]
       });
