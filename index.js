@@ -69,16 +69,21 @@ app.post("/", (req, res) => {
       if (expiryDate < today) {
         // something
         actions.push({
-          type: "stop",
-          title: "No sale of products beyond their expiry date",
-          message: "Item will be removed",
-          dismiss_label: "Remove Item"
+          //   type: "stop",
+          //   title: "No sale of products beyond their expiry date",
+          //   message: "Item will be removed",
+          //   dismiss_label: "Remove Item"
+          type: "confirm",
+          title: "✋ ID Check",
+          message: "Please confirm than you have checked to ID of the customer.",
+          confirm_label: "Done",
+          dismiss_label: "Cancel"
         });
-        // remove the line item with product past expiry
-        actions.push({
-          type: "remove_line_item",
-          line_item_id: lineItem.id
-        });
+        // // remove the line item with product past expiry
+        // actions.push({
+        //   type: "remove_line_item",
+        //   line_item_id: lineItem.id
+        // });
 
         return;
       }
