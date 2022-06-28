@@ -82,6 +82,8 @@ app.post("/", (req, res) => {
       ]
     });
   });
+
+  res.json({ actions });
 });
 
 // app.post("/", (req, res) => {
