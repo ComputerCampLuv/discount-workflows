@@ -17,7 +17,7 @@ app.get("/", (req, res) => {
 app.post("/", (req, res) => {
   const today = new Date();
   today.setUTCHours(0, 0, 0, 0);
-  console.log('today:', startOfDay);
+  console.log('today:', today);
 
   const startOfDay = new Date();
   startOfDay.setUTCHours(0, 0, 0, 0);
