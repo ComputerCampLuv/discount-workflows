@@ -14,7 +14,26 @@ app.get('/', (req, res) => {
 
 app.post('/', (req, res) => {
   console.log(req.body);
-  res.json({ actions: [] });
+  if (req.body?.line_items && req.body?.line_items[0]?.id) {
+    res.json({
+      actions: [
+        {
+          type: "require_custom_fields",
+          title: "We need some information about this product",
+          message: "Bla bla bla",
+          entity: "line_item",
+          entity_id: req.body?.line_items[0].id,
+          required_custom_fields: [
+            {
+              name: "expiry_date"
+            }
+          ]
+        }
+      ]
+    });
+  } else {
+    res.json({ actions: [] });
+  }
 });
 
 app.listen(port, () => {
