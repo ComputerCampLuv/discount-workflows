@@ -39,7 +39,7 @@ app.post('/', (req, res) => {
             type: "add_line_item",
             product_id: lineItem.product_id,
             quantity: "1",
-            unit_price: new Decimal(lineItem.total_price).mul(0.75).toFixed(2),
+            unit_price: new Decimal(lineItem.price_total).mul(0.75).toFixed(2),
             note: "Reduced"
           }
         ]
