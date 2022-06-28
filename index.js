@@ -19,7 +19,7 @@ app.post("/", (req, res) => {
 
   const actions = [];
 
-  req.body.line_items.forEach(lineItem => {
+  (req.body.line_items || []).forEach(lineItem => {
     console.log('lineItem:', lineItem);
     // Line item was created as a result of a previous action
     if (lineItem.note === "Reduced") {
@@ -82,24 +82,7 @@ app.post("/", (req, res) => {
 
         return;
       }
-      // if (
-      //   expiryDate.getTime() >= startOfDay &&
-      //   expiryDate.getTime() <= endOfDay
-      // ) {
-      //   // remove the line item with product nearing expiry
-      //   actions.push({
-      //     type: "remove_line_item",
-      //     line_item_id: lineItem.id
-      //   });
-      //   // replace the line item with a reduced variant
-      //   actions.push({
-      //     type: "add_line_item",
-      //     product_id: lineItem.product_id,
-      //     quantity: lineItem.quantity,
-      //     unit_price: new Decimal(lineItem.price).mul(0.75).toFixed(2),
-      //     note: "Reduced"
-      //   });
-      // }
+
       return;
     }
 
