@@ -22,7 +22,7 @@ app.post("/", (req, res) => {
   (req.body.line_items || []).forEach(lineItem => {
     console.log('lineItem:', lineItem);
     // Line item was created as a result of a previous action
-    if (lineItem.note === "Reduced") {
+    if (lineItem.note === "Donated") {
       return;
     }
 
@@ -67,23 +67,19 @@ app.post("/", (req, res) => {
       }
 
       if (expiryDate < today) {
-        // something
+        // remove the line item with expired product
         actions.push({
-          //   type: "stop",
-          //   title: "No sale of products beyond their expiry date",
-          //   message: "Item will be removed",
-          //   dismiss_label: "Remove Item"
-          type: "confirm",
-          title: "✋ ID Check",
-          message: "Please confirm than you have checked to ID of the customer.",
-          confirm_label: "Done",
-          dismiss_label: "Cancel"
+          type: "remove_line_item",
+          line_item_id: lineItem.id
         });
-        // // remove the line item with product past expiry
-        // actions.push({
-        //   type: "remove_line_item",
-        //   line_item_id: lineItem.id
-        // });
+        // replace the line item with a donated variant
+        actions.push({
+          type: "add_line_item",
+          product_id: lineItem.product_id,
+          quantity: lineItem.quantity,
+          unit_price: "0",
+          note: "Donated"
+        });
 
         return;
       }
