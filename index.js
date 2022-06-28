@@ -15,17 +15,7 @@ app.get("/", (req, res) => {
 
 
 app.post("/", (req, res) => {
-  const today = new Date();
-  today.setUTCHours(0, 0, 0, 0);
-  console.log('today:', today);
-
-  const startOfDay = new Date();
-  startOfDay.setUTCHours(0, 0, 0, 0);
-  console.log('startOfDay:', startOfDay);
-
-  const endOfDay = new Date();
-  endOfDay.setUTCHours(23, 59, 59, 999);
-  console.log('endOfDay:', endOfDay);
+  const today = new Date().setUTCHours(0, 0, 0, 0);
 
   const actions = [];
 
