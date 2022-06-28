@@ -15,6 +15,10 @@ app.get("/", (req, res) => {
 
 
 app.post("/", (req, res) => {
+  const today = new Date();
+  today.setUTCHours(0, 0, 0, 0);
+  console.log('today:', startOfDay);
+
   const startOfDay = new Date();
   startOfDay.setUTCHours(0, 0, 0, 0);
   console.log('startOfDay:', startOfDay);
@@ -50,14 +54,11 @@ app.post("/", (req, res) => {
     console.log('expiryDateField:', expiryDateField);
 
     if (expiryDateField) {
-      const expiryDate = new Date(expiryDateField.string_value);
+      const expiryDate = new Date(expiryDateField.string_value).getTime();
 
       console.log('expiryDate:', expiryDate);
 
-      if (
-        expiryDate.getTime() >= startOfDay &&
-        expiryDate.getTime() <= endOfDay
-      ) {
+      if (expiryDate === today) {
         // remove the line item with product nearing expiry
         actions.push({
           type: "remove_line_item",
@@ -71,7 +72,44 @@ app.post("/", (req, res) => {
           unit_price: new Decimal(lineItem.price).mul(0.75).toFixed(2),
           note: "Reduced"
         });
+
+        return;
       }
+
+      if (expiryDate < today) {
+        // something
+        actions.push({
+          type: "stop",
+          title: "No sale of products beyond their expiry date",
+          message: "Item will be removed",
+          dismiss_label: "Remove Item"
+        });
+        // remove the line item with product past expiry
+        actions.push({
+          type: "remove_line_item",
+          line_item_id: lineItem.id
+        });
+
+        return;
+      }
+      // if (
+      //   expiryDate.getTime() >= startOfDay &&
+      //   expiryDate.getTime() <= endOfDay
+      // ) {
+      //   // remove the line item with product nearing expiry
+      //   actions.push({
+      //     type: "remove_line_item",
+      //     line_item_id: lineItem.id
+      //   });
+      //   // replace the line item with a reduced variant
+      //   actions.push({
+      //     type: "add_line_item",
+      //     product_id: lineItem.product_id,
+      //     quantity: lineItem.quantity,
+      //     unit_price: new Decimal(lineItem.price).mul(0.75).toFixed(2),
+      //     note: "Reduced"
+      //   });
+      // }
       return;
     }
 
@@ -94,80 +132,6 @@ app.post("/", (req, res) => {
 
   res.json({ actions });
 });
-
-// app.post("/", (req, res) => {
-//   const startOfDay = new Date();
-//   startOfDay.setUTCHours(0, 0, 0, 0);
-//   // console.log(startOfDay);
-
-//   const endOfDay = new Date();
-//   endOfDay.setUTCHours(23, 59, 59, 999);
-//   // console.log(endOfDay);
-
-//   const lineItem = req.body.line_items[0];
-
-//   console.log("line_item:", JSON.stringify(lineItem));
-
-//   const expiryDate = lineItem
-//     .custom_fields
-//     .find(({ name }) => name === "expiry_date");
-
-//   const expires = lineItem
-//     .product
-//     .custom_fields
-//     .find(({ name }) => name === "expires")
-//     ?.boolean_value;
-
-//   if (
-//     !expires || lineItem.note === "Reduced"
-//   ) {
-//     res.json({ actions: [] });
-//   } else if (expiryDate) {
-//     const today = new Date();
-//     const expiry = new Date(expiryDate.string_value);
-    
-//     if (
-//       expiry.getYear() === today.getYear() &&
-//       expiry.getMonth() === today.getMonth() &&
-//       expiry.getDay() === today.getDay()
-//     ) {
-//       res.json({
-//         actions: [
-//           {
-//             type: "remove_line_item",
-//             line_item_id: lineItem.id
-//           },
-//           {
-//             type: "add_line_item",
-//             product_id: lineItem.product_id,
-//             quantity: "1",
-//             unit_price: new Decimal(lineItem.price_total).mul(0.75).toFixed(2),
-//             note: "Reduced"
-//           }
-//         ]
-//       });
-//     } else {
-//       res.json({ actions: [] });
-//     }
-//   } else {
-//     res.json({
-//       actions: [
-//         {
-//           type: "require_custom_fields",
-//           title: "We need some information about this product",
-//           message: "Bla bla bla",
-//           entity: "line_item",
-//           entity_id: req.body?.line_items[0].id,
-//           required_custom_fields: [
-//             {
-//               name: "expiry_date"
-//             }
-//           ]
-//         }
-//       ]
-//     });
-//   }
-// });
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
