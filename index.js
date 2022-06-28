@@ -22,7 +22,10 @@ app.post("/", (req, res) => {
   (req.body.line_items || []).forEach(lineItem => {
     console.log('lineItem:', lineItem);
     // Line item was created as a result of a previous action
-    if (lineItem.note === "Donated") {
+    if (
+      lineItem.note === "Donated" ||
+      lineItem.note === "Reduced"
+    ) {
       return;
     }
 
