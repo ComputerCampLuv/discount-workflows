@@ -11,12 +11,12 @@ if (port == null || port == "") {
 
 const discountRules = {
   computercamplove: [
-    { days: 1, hours: 0, minutes: 0, reduction: 1 },
+    { days: -1, hours: 0, minutes: 0, reduction: 1 },
     { days: 0, hours: 17, minutes: 0, reduction: 0.95 },
     { days: 0, hours: 12, minutes: 0, reduction: 0.75 },
     { days: 0, hours: 0, minutes: 0, reduction: 0.50 },
-    { days: -1, hours: 0, minutes: 0, reduction: 0.25 },
-    { days: -2, hours: 0, minutes: 0, reduction: 0.1 }
+    { days: 1, hours: 0, minutes: 0, reduction: 0.25 },
+    { days: 2, hours: 0, minutes: 0, reduction: 0.1 }
   ]
 };
 
@@ -25,7 +25,7 @@ const satisfiesRule = (expiry, rule) => {
   const cutoff = new Date(
     expiry.getFullYear(),
     expiry.getMonth(),
-    expiry.getDate() + rule.days,
+    expiry.getDate() - rule.days,
     rule.hours,
     rule.minutes
   );
@@ -130,6 +130,9 @@ app.post("/discounts", async (req, res) => {
       { ...defaults, ...dc },
       ['days', 'hours', 'minutes', 'reduction']
     )
+  );
+  discounts.sort(
+    (a, b) => a.days - b.days || b.hours - a.hours || b.minutes || a.minutes
   );
 
   discountRules[req.body.domain_prefix] = discounts;
